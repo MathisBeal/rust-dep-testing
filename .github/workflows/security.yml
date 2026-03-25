@@ -10,8 +10,6 @@ permissions:
   contents: read
   security-events: write
 
-# yeet
-
 jobs:
   grype-scan:
     runs-on: ubuntu-latest # Même si tu es sur Windows, la CI tourne souvent sur Linux (c'est moins cher/plus rapide)
