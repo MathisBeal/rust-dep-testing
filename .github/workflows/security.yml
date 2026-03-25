@@ -25,6 +25,9 @@ jobs:
       - name: Generate SBOM
         run: cargo cyclonedx -f json --target-in-filename --target x86_64-pc-windows-msvc
 
+      - name: Debug LS
+        run: ls -R
+
       - name: Scan SBOM with Grype
         uses: anchore/scan-action@v3
         id: scan
