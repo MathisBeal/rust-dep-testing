@@ -37,6 +37,9 @@ jobs:
           output-file: "results.sarif"
           fail-build: false # Pour ne pas bloquer la CI tout de suite
 
+      - name: Debug LS 2
+        run: ls -R
+
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
