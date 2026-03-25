@@ -1,0 +1,40 @@
+name: "Security Scan"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  grype-scan:
+    runs-on: ubuntu-latest # Même si tu es sur Windows, la CI tourne souvent sur Linux (c'est moins cher/plus rapide)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install CycloneDX
+        run: cargo install cargo-cyclonedx
+
+      - name: Generate SBOM
+        run: cargo cyclonedx -f json --target-in-filename --target x86_64-pc-windows-msvc
+
+      - name: Scan SBOM with Grype
+        uses: anchore/scan-action@v3
+        id: scan
+        with:
+          sbom: "./rust-dep-testing_x86_64-pc-windows-msvc.cdx.json" # Adapte le nom si besoin
+          format: "sarif"
+          output-file: "results.sarif"
+          fail-build: false # Pour ne pas bloquer la CI tout de suite
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "results.sarif"

@@ -1,0 +1,316 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.3",
+  "version": 1,
+  "serialNumber": "urn:uuid:d8b7a49c-92da-4980-acd6-f4d3fdd382ab",
+  "metadata": {
+    "timestamp": "2026-03-25T15:18:58.477045800Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cargo-cyclonedx",
+        "version": "0.5.9"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "path+file:///D:/rust-dep-testing#0.1.0",
+      "name": "rust-dep-testing",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:cargo/rust-dep-testing@0.1.0?download_url=file://.",
+      "components": [
+        {
+          "type": "application",
+          "bom-ref": "path+file:///D:/rust-dep-testing#0.1.0 bin-target-0",
+          "name": "rust-dep-testing",
+          "version": "0.1.0",
+          "purl": "pkg:cargo/rust-dep-testing@0.1.0?download_url=file://.#src/main.rs"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "cdx:rustc:sbom:target:triple",
+        "value": "x86_64-pc-windows-msvc"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#autocfg@1.5.0",
+      "author": "Josh Stone <cuviper@gmail.com>",
+      "name": "autocfg",
+      "version": "1.5.0",
+      "description": "Automatic cfg for Rust compiler features",
+      "scope": "excluded",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "Apache-2.0 OR MIT"
+        }
+      ],
+      "purl": "pkg:cargo/autocfg@1.5.0",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/autocfg/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/cuviper/autocfg"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#chrono@0.4.18",
+      "author": "Kang Seonghoon <public+rust@mearie.org>, Brandon W Maister <quodlibetor@gmail.com>",
+      "name": "chrono",
+      "version": "0.4.18",
+      "description": "Date and time library for Rust",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d021fddb7bd3e734370acfa4a83f34095571d8570c039f1420d77540f68d5772"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/chrono@0.4.18",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/chrono/"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/chronotope/chrono"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/chronotope/chrono"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.183",
+      "author": "The Rust Project Developers",
+      "name": "libc",
+      "version": "0.2.183",
+      "description": "Raw FFI bindings to platform libraries like libc.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/libc@0.2.183",
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/rust-lang/libc"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#num-integer@0.1.46",
+      "author": "The Rust Project Developers",
+      "name": "num-integer",
+      "version": "0.1.46",
+      "description": "Integer traits and functions",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "7969661fd2958a5cb096e56c8e1ad0444ac2bbcd0061bd28660485a44879858f"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/num-integer@0.1.46",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/num-integer"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/rust-num/num-integer"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/rust-num/num-integer"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19",
+      "author": "The Rust Project Developers",
+      "name": "num-traits",
+      "version": "0.2.19",
+      "description": "Numeric traits for generic mathematics",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/num-traits@0.2.19",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/num-traits"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/rust-num/num-traits"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/rust-num/num-traits"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#time@0.1.45",
+      "author": "The Rust Project Developers",
+      "name": "time",
+      "version": "0.1.45",
+      "description": "Utilities for working with time-related functions in Rust. ",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/time@0.1.45",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/time/~0.1"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/time-rs/time"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/time-rs/time"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9",
+      "author": "Peter Atashian <retep998@gmail.com>",
+      "name": "winapi",
+      "version": "0.3.9",
+      "description": "Raw FFI bindings for all of Windows API.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/winapi@0.3.9",
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.rs/winapi/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/retep998/winapi-rs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "path+file:///D:/rust-dep-testing#0.1.0",
+      "dependsOn": [
+        "registry+https://github.com/rust-lang/crates.io-index#chrono@0.4.18"
+      ]
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#autocfg@1.5.0"
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#chrono@0.4.18",
+      "dependsOn": [
+        "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.183",
+        "registry+https://github.com/rust-lang/crates.io-index#num-integer@0.1.46",
+        "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19",
+        "registry+https://github.com/rust-lang/crates.io-index#time@0.1.45",
+        "registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9"
+      ]
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.183"
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#num-integer@0.1.46",
+      "dependsOn": [
+        "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19"
+      ]
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19",
+      "dependsOn": [
+        "registry+https://github.com/rust-lang/crates.io-index#autocfg@1.5.0"
+      ]
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#time@0.1.45",
+      "dependsOn": [
+        "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.183",
+        "registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9"
+      ]
+    },
+    {
+      "ref": "registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9"
+    }
+  ]
+}
