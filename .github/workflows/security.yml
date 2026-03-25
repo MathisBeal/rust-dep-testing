@@ -20,7 +20,7 @@ jobs:
           override: true
 
       - name: Install CycloneDX
-        run: cargo install cargo-cyclonedx
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/CycloneDX/cyclonedx-rust-cargo/releases/download/cargo-cyclonedx-0.5.9/cargo-cyclonedx-installer.sh | sh
 
       - name: Generate SBOM
         run: cargo cyclonedx -f json --target-in-filename --target x86_64-pc-windows-msvc
@@ -41,6 +41,6 @@ jobs:
         run: ls -R
 
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "results.sarif"
