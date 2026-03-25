@@ -21,7 +21,7 @@ jobs:
         run: curl -sSfL https://get.anchore.io/grype | sudo sh -s -- -b /usr/local/bin
 
       - name: Run Grype
-        run: grype . -o sarif > results.raw.sarif
+        run: grype . -o sarif > results.sarif
 
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v4
