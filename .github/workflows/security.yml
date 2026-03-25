@@ -17,42 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Install CycloneDX
-        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/CycloneDX/cyclonedx-rust-cargo/releases/download/cargo-cyclonedx-0.5.9/cargo-cyclonedx-installer.sh | sh
-
-      - name: Generate SBOM
-        run: cargo cyclonedx -f json --target-in-filename --target x86_64-pc-windows-msvc
-
-      - name: Debug LS
-        run: ls -R
-
-      - name: Cat SBOM
-        run: cat ./rust-dep-testing_x86_64-pc-windows-msvc.cdx.json
-
       - name: Install Grype
         run: curl -sSfL https://get.anchore.io/grype | sudo sh -s -- -b /usr/local/bin
 
-      - name: Run Grype and fix SARIF
-        run: |
-          # 1. On lance le scan sur le SBOM
-          # 2. On utilise 'jq' pour remplacer l'URI vide par "Cargo.lock" 
-          #    pour que GitHub sache où afficher l'alerte.
-          grype sbom:./rust-dep-testing_x86_64-pc-windows-msvc.cdx.json -o sarif > results.raw.sarif
-
-          # Correction de l'URI vide (indispensable pour upload-sarif)
-          cat results.raw.sarif | jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri = "Cargo.lock"' > results.sarif
-
-      - name: Debug LS 2
-        run: ls -R
-
-      - name: Cat Sarif
-        run: cat results.sarif
+      - name: Run Grype
+        run: grype . -o sarif > results.raw.sarif
 
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v4
