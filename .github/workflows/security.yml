@@ -43,7 +43,7 @@ jobs:
           # 1. On lance le scan sur le SBOM
           # 2. On utilise 'jq' pour remplacer l'URI vide par "Cargo.lock" 
           #    pour que GitHub sache où afficher l'alerte.
-          grype sbom:./bom.json -o sarif > results.raw.sarif
+          grype sbom:./rust-dep-testing_x86_64-pc-windows-msvc.cdx.json -o sarif > results.raw.sarif
 
           # Correction de l'URI vide (indispensable pour upload-sarif)
           cat results.raw.sarif | jq '.runs[].results[].locations[].physicalLocation.artifactLocation.uri = "Cargo.lock"' > results.sarif
