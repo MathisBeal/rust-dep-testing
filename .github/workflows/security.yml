@@ -20,7 +20,7 @@ jobs:
           override: true
 
       - name: Install CycloneDX
-        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/CycloneDX/cyclonedx-rust-cargo/releases/download/cargo-cyclonedx-0.5.9/cargo-cyclonedx-installer.sh | sh
+        run: cargo install cargo-cyclonedx
 
       - name: Generate SBOM
         run: cargo cyclonedx -f json --target-in-filename --target x86_64-pc-windows-msvc
