@@ -5,6 +5,9 @@ on:
     branches:
       - main # Le workflow se déclenche quand on pousse vers main
 
+env:
+  APP_NAME: "rust-dep-testing" # Nom de l'application
+
 jobs:
   # Récupérer le numéro de version à partir du message de commit "... release/1.0.0"
   prepare:
@@ -31,16 +34,42 @@ jobs:
           fi
 
   # 2. Jobs de build qui attendent la version
-  build-windows:
+  build-and-release:
     needs: prepare
-    runs-on: windows-latest
-    steps:
-      - name: Build with version
-        run: echo "Building Windows version ${{ needs.prepare.outputs.version }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            binary_path: "target/release/${APP_NAME}"
+            asset_name: "${APP_NAME}-ubuntu-${{ needs.prepare.outputs.version }}"
+          - os: windows-latest
+            binary_path: "target\\release\\${APP_NAME}.exe"
+            asset_name: "${APP_NAME}-windows-${{ needs.prepare.outputs.version }}.exe"
 
-  build-linux:
-    needs: prepare
-    runs-on: ubuntu-latest
     steps:
-      - name: Build with version
-        run: echo "Building Linux version ${{ needs.prepare.outputs.version }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build application
+        run: cargo build --release
+
+      - name: Rename binary for release
+        run: mv ${{ matrix.binary_path }} ${{ matrix.asset_name }}
+
+      - name: Upload Binary to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ env.APP_NAME }}-${{ needs.prepare.outputs.version }}"
+          name: "${{ env.APP_NAME }} version ${{ needs.prepare.outputs.version }}"
+          body: "Release de ${{ env.APP_NAME }} version ${{ needs.prepare.outputs.version }}"
+          # On pointe vers le chemin du build et on peut le renommer à la volée
+          files: ${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
