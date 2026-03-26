@@ -7,6 +7,13 @@ on:
 
 env:
   APP_NAME: "rust-dep-testing" # Nom de l'application
+  SDK_CRATE: "samurai_sdk" # Nom du crate du SDK
+  DEMO_APP_CRATE: "demo_app" # Nom du crate de la demo_app
+  SBOM_OUTPUT_FORMAT: "cyclone_dx_json_1_6" # Format de sortie pour les SBOMs
+  SBOM_OUTPUT_EXTENSION: "cyclonedx.json" # Extension de fichier pour les SBOMs
+
+permissions:
+  contents: write # Permet de créer/modifier des releases et de lire les fichiers
 
 jobs:
   # Récupérer le numéro de version à partir du message de commit "... release/1.0.0"
@@ -104,15 +111,121 @@ jobs:
           # On stocke le nom pour l'étape d'après
           echo "FINAL_ASSET_NAME=$NEW_NAME" >> $GITHUB_ENV
 
+      - name: Install Cargo-SBOM
+        run: cargo install cargo-sbom
+
+      - name: Make SBOMs
+        run: |
+          # On génère les SBOMs au format CycloneDX pour le SDK et la demo_app
+          VERSION="${{ needs.prepare.outputs.version }}"
+          SUFFIX="${{ matrix.platform }}-${VERSION}.${{ env.SBOM_OUTPUT_EXTENSION }}"
+          # cargo sbom --cargo-package ${{ env.SDK_CRATE }} --output-format ${{ env.SBOM_OUTPUT_FORMAT }} > "${{ env.SDK_CRATE }}-${SUFFIX}"
+          # cargo sbom --cargo-package ${{ env.DEMO_APP_CRATE }} --output-format ${{ env.SBOM_OUTPUT_FORMAT }} > "${{ env.DEMO_APP_CRATE }}-${SUFFIX}"
+          cargo sbom --output-format ${{ env.SBOM_OUTPUT_FORMAT }} > "${{ env.APP_NAME }}-${SUFFIX}"
+
+      - name: Upload SBOMs as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sboms-${{ matrix.platform }} # Un nom par plateforme
+          path: |
+            *.${{ env.SBOM_OUTPUT_EXTENSION }}
+
       - name: Upload Binary to Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "${{ env.APP_NAME }}-${{ needs.prepare.outputs.version }}"
           name: "${{ env.APP_NAME }} version ${{ needs.prepare.outputs.version }}"
           body: |
-            ## Date de release : ${{ needs.prepare.outputs.release_date }}
+            ## 📆 Date de release : ${{ needs.prepare.outputs.release_date }}
 
+            ## 📝 Changelog :
             ${{ needs.prepare.outputs.changelog }}
-          files: ${{ env.FINAL_ASSET_NAME }}
+
+            *(Analyse de sécurité en cours...)*
+          files: |
+            ${{ env.FINAL_ASSET_NAME }}
+            *.${{ env.SBOM_OUTPUT_EXTENSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  security-scan:
+    needs: [prepare, build-and-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Grype
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      # On récupère les SBOMs générés par les builds précédents
+      - name: Download all Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: sboms
+          pattern: sboms-*
+          merge-multiple: true
+
+      - name: Scan SBOMs and Generate Markdown Table
+        id: grype_scan
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          EXT="${{ env.SBOM_OUTPUT_EXTENSION }}"
+
+          # Initialisation du contenu du tableau dans une variable temporaire
+          TABLE_CONTENT="### 🛡️ Rapport de Sécurité (Grype)\n"
+          TABLE_CONTENT+="| Produit | Plateforme | Critique | Élevé | Moyen |\n"
+          TABLE_CONTENT+="| :--- | :--- | :---: | :---: | :---: |\n"
+
+          # Fonction de scan
+          scan_and_report() {
+            CRATE=$1
+            PLATFORM=$2
+            FILE="./sboms/${CRATE}-${PLATFORM}-${VERSION}.${EXT}"
+            REPORT_NAME="vulnerability-report-${CRATE}-${PLATFORM}.txt"
+            
+            if [ -f "$FILE" ]; then
+              # 1. Générer le rapport détaillé
+              grype sbom:"$FILE" --output table > "$REPORT_NAME"
+              
+              # 2. Extraire les stats (on prend la dernière ligne du tableau Grype)
+              SUMMARY=$(tail -n 1 "$REPORT_NAME")
+              CRIT=$(echo "$SUMMARY" | grep -oP 'Critical: \K[0-9]+' || echo "0")
+              HIGH=$(echo "$SUMMARY" | grep -oP 'High: \K[0-9]+' || echo "0")
+              MED=$(echo "$SUMMARY" | grep -oP 'Medium: \K[0-9]+' || echo "0")
+              
+              # Ajout de la ligne au tableau (avec \n pour le formatage)
+              TABLE_CONTENT+="| $CRATE | $PLATFORM | $CRIT | $HIGH | $MED |\n"
+            else
+              echo "Fichier non trouvé: $FILE"
+            fi
+          }
+
+          # Lancer les scans
+          scan_and_report "${{ env.APP_NAME }}" "ubuntu"
+          scan_and_report "${{ env.APP_NAME }}" "windows"
+          # scan_and_report "${{ env.SDK_CRATE }}" "ubuntu"
+          # scan_and_report "${{ env.SDK_CRATE }}" "windows"
+          # scan_and_report "${{ env.DEMO_APP_CRATE }}" "ubuntu"
+          # scan_and_report "${{ env.DEMO_APP_CRATE }}" "windows"
+
+          # Export final vers GITHUB_ENV pour le step suivant
+          {
+            echo "security_table<<EOF"
+            echo -e "$TABLE_CONTENT"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Update Release Description
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ env.APP_NAME }}-${{ needs.prepare.outputs.version }}"
+          body: |
+            ## 📅 Date : ${{ needs.prepare.outputs.release_date }}
+
+            ## 📝 Changements
+            ${{ needs.prepare.outputs.changelog }}
+
+            ${{ env.security_table }}
+          # On ajoute les rapports TXT à la release
+          files: vulnerability-report-*.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
