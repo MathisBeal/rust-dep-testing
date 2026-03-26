@@ -184,22 +184,24 @@ jobs:
             REPORT_NAME="vulnerability-report-${CRATE}-${PLATFORM}.txt"
             
             if [ -f "$FILE" ]; then
-              # 1. Générer le rapport détaillé
+              # 1. Générer le rapport détaillé (pour l'asset de la release)
               grype sbom:"$FILE" --output table > "$REPORT_NAME"
               
-              # 2. Extraire les stats (on prend la dernière ligne du tableau Grype)
-              SUMMARY=$(tail -n 1 "$REPORT_NAME")
-              CRIT=$(echo "$SUMMARY" | grep -oP 'Critical: \K[0-9]+' || echo "0")
-              HIGH=$(echo "$SUMMARY" | grep -oP 'High: \K[0-9]+' || echo "0")
-              MED=$(echo "$SUMMARY" | grep -oP 'Medium: \K[0-9]+' || echo "0")
+              # 2. Extraire les comptes précis via JSON (pour le tableau Markdown)
+              # On utilise jq pour filtrer par sévérité
+              JSON_DATA=$(grype sbom:"$FILE" --output json)
               
-              # Ajout de la ligne au tableau (avec \n pour le formatage)
-              TABLE_CONTENT+="| $CRATE | $PLATFORM | $CRIT | $HIGH | $MED |\n"
+              CRIT=$(echo "$JSON_DATA" | jq '[.matches[] | select(.vulnerability.severity == "Critical")] | length')
+              HIGH=$(echo "$JSON_DATA" | jq '[.matches[] | select(.vulnerability.severity == "High")] | length')
+              MED=$(echo "$JSON_DATA" | jq '[.matches[] | select(.vulnerability.severity == "Medium")] | length')
+              LOW=$(echo "$JSON_DATA" | jq '[.matches[] | select(.vulnerability.severity == "Low")] | length')
+              
+              # Ajout de la ligne au tableau
+              TABLE_CONTENT+="| $CRATE | $PLATFORM | $CRIT | $HIGH | $MED | $LOW |\n"
             else
               echo "Fichier non trouvé: $FILE"
             fi
           }
-
           # Lancer les scans
           scan_and_report "${{ env.APP_NAME }}" "ubuntu"
           scan_and_report "${{ env.APP_NAME }}" "windows"
