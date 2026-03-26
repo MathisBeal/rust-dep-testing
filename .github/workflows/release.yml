@@ -1,0 +1,21 @@
+name: Create Release and SBOM
+
+on:
+  push:
+    branches:
+      - main # Le workflow se déclenche quand on pousse vers main
+
+jobs:
+  release:
+    # Cette condition vérifie si le message de commit contient 'release/'
+    # ou si vous utilisez une convention de nommage spécifique lors du merge.
+    # Note : Si c'est un merge standard, GitHub crée souvent un message "Merge branch 'release/1.0.0'..."
+    if: contains(github.event.head_commit.message, 'release/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Preparation
+        run: echo "Début de la release pour Windows et Linux..."
