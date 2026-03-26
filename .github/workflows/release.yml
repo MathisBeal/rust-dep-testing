@@ -17,6 +17,11 @@ jobs:
       changelog: ${{ steps.extract_changelog.outputs.changelog }}
       release_date: ${{ steps.extract_release_date.outputs.release_date }}
     steps:
+      # Pour lire le CHANGELOG.md
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Extraire la version depuis message de commit
       - name: Extract version from commit message
         id: extract_version
         run: |
@@ -28,6 +33,7 @@ jobs:
         run: |
           echo "Extracted version: ${{ steps.extract_version.outputs.version }}"
 
+      # Exit si la version n'est pas trouvée
       - name: Verify version
         run: |
           if [ -z "${{ steps.extract_version.outputs.version }}" ]; then
@@ -35,14 +41,16 @@ jobs:
             exit 1
           fi
 
+      # Extraire la date de release (en UTC)
       - name: Get current date
         id: extract_release_date
         run: |
           RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "release_date=$RELEASE_DATE" >> $GITHUB_OUTPUT
 
+      # Extraire la section du changelog correspondant à la version qu'on va release
       - name: Extract Changelog Section
-        id: get_changelog
+        id: extract_changelog
         run: |
           VERSION="${{ steps.extract_version.outputs.version }}"
           # Cette commande récupère tout ce qui se trouve entre le titre de la version actuelle 
@@ -55,6 +63,12 @@ jobs:
             echo "$BODY"
             echo "EOF"
           } >> $GITHUB_OUTPUT
+
+      # Debug changelog
+      - name: Debug Changelog
+        run: |
+          echo "Changelog for version ${{ steps.extract_version.outputs.version }}:"
+          echo "${{ steps.extract_changelog.outputs.changelog }}"
 
   # Jobs de build qui attendent la version
   build-and-release:
@@ -98,6 +112,7 @@ jobs:
           body: |
             ## Date de release : ${{ needs.prepare.outputs.release_date }}
 
-            ${{ needs.prepare.outputs.changelog }}          files: ${{ env.FINAL_ASSET_NAME }}
+            ${{ needs.prepare.outputs.changelog }}
+          files: ${{ env.FINAL_ASSET_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
