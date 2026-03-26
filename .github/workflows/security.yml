@@ -1,13 +1,11 @@
 name: "Security Scan"
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   schedule:
     # - cron: "0 7 * * *" # Tout les jours à 07:00
     - cron: "*/10 * * * *" # Toutes les 10 minutes (test)
+      timezone: "Europe/Paris"
+    - cron: "35 8 * * *" # Toutes les 10 minutes (test)
       timezone: "Europe/Paris"
 
 permissions:
