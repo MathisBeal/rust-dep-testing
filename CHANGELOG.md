@@ -15,6 +15,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Première version stable de l'application `rust-dep-testing`.
 - Fonctionnalités de base pour le test des dépendances.
 
+## [0.1.6] - 2026-03-20
+### Corrigé
+- Correction du workflow de release
+
 ## [0.1.5] - 2026-03-20
 ### Corrigé
 - Correction du workflow de release

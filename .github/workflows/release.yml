@@ -55,11 +55,11 @@ jobs:
           VERSION="${{ steps.extract_version.outputs.version }}"
           # Cette commande récupère tout ce qui se trouve entre le titre de la version actuelle 
           # et le titre de la version suivante (ou la fin du fichier)
-          BODY=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '1d;$d')
+          BODY=$(awk "/## \[$VERSION\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
 
           # Gestion du multi-ligne pour GitHub Actions Output
           {
-            echo "body<<EOF"
+            echo "changelog<<EOF"
             echo "$BODY"
             echo "EOF"
           } >> $GITHUB_OUTPUT
