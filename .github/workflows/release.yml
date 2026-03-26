@@ -1,5 +1,9 @@
 name: Create Release and SBOM
 
+description: |
+  Ce workflow automatise la création d'une release GitHub avec les binaires compilés et les SBOMs générés. 
+  Il inclut également une analyse de sécurité avec Grype, dont les résultats sont intégrés dans la description de la release.
+
 on:
   push:
     branches:
