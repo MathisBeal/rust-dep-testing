@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
+      changelog: ${{ steps.extract_changelog.outputs.changelog }}
+      release_date: ${{ steps.extract_release_date.outputs.release_date }}
     steps:
       - name: Extract version from commit message
         id: extract_version
@@ -32,6 +34,27 @@ jobs:
             echo "Erreur : Version introuvable dans le message de commit."
             exit 1
           fi
+
+      - name: Get current date
+        id: extract_release_date
+        run: |
+          RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "release_date=$RELEASE_DATE" >> $GITHUB_OUTPUT
+
+      - name: Extract Changelog Section
+        id: get_changelog
+        run: |
+          VERSION="${{ steps.extract_version.outputs.version }}"
+          # Cette commande récupère tout ce qui se trouve entre le titre de la version actuelle 
+          # et le titre de la version suivante (ou la fin du fichier)
+          BODY=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '1d;$d')
+
+          # Gestion du multi-ligne pour GitHub Actions Output
+          {
+            echo "body<<EOF"
+            echo "$BODY"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
   # Jobs de build qui attendent la version
   build-and-release:
