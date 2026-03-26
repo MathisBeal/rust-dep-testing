@@ -115,6 +115,7 @@ jobs:
         run: cargo install cargo-sbom
 
       - name: Make SBOMs
+        shell: bash
         run: |
           # On génère les SBOMs au format CycloneDX pour le SDK et la demo_app
           VERSION="${{ needs.prepare.outputs.version }}"

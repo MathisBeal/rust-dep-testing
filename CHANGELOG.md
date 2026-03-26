@@ -2,6 +2,10 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [0.2.1] - 2026-03-20
+### Ajouts
+- Mise en place du SBOM
+
 ## [0.2.0] - 2026-03-20
 ### Ajouts
 - Mise en place du SBOM
