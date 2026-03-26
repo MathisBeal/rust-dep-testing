@@ -1,0 +1,46 @@
+name: Create Release and SBOM
+
+on:
+  push:
+    branches:
+      - main # Le workflow se déclenche quand on pousse vers main
+
+jobs:
+  # Récupérer le numéro de version à partir du message de commit "... release/1.0.0"
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Extract version from commit message
+        id: extract_version
+        run: |
+          # Extraire la partie après 'release/' dans le message de commit
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'release/\K[0-9]+\.[0-9]+\.[0-9]+')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Debug version
+        run: |
+          echo "Extracted version: ${{ steps.extract_version.outputs.version }}"
+
+      - name: Verify version
+        run: |
+          if [ -z "${{ steps.extract_version.outputs.version }}" ]; then
+            echo "Erreur : Version introuvable dans le message de commit."
+            exit 1
+          fi
+
+  # 2. Jobs de build qui attendent la version
+  build-windows:
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - name: Build with version
+        run: echo "Building Windows version ${{ needs.prepare.outputs.version }}"
+
+  build-linux:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build with version
+        run: echo "Building Linux version ${{ needs.prepare.outputs.version }}"
