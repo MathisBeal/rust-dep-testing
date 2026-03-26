@@ -95,7 +95,9 @@ jobs:
         with:
           tag_name: "${{ env.APP_NAME }}-${{ needs.prepare.outputs.version }}"
           name: "${{ env.APP_NAME }} version ${{ needs.prepare.outputs.version }}"
-          body: "Release de ${{ env.APP_NAME }} version ${{ needs.prepare.outputs.version }}"
-          files: ${{ env.FINAL_ASSET_NAME }}
+          body: |
+            ## Date de release : ${{ needs.prepare.outputs.release_date }}
+
+            ${{ needs.prepare.outputs.changelog }}          files: ${{ env.FINAL_ASSET_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
