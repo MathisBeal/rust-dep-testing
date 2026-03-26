@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # - cron: "0 7 * * *" # Tout les jours à 07:00
+    - cron: "*/10 * * * *" # Toutes les 10 minutes (test)
+      timezone: "Europe/Paris"
 
 permissions:
   contents: read
@@ -16,6 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: "main"
 
       - name: Install Grype
         run: curl -sSfL https://get.anchore.io/grype | sudo sh -s -- -b /usr/local/bin
